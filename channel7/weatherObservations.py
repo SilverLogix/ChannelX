@@ -5,7 +5,7 @@ from xml.etree.ElementTree import ElementTree
 from setup import *
 
 
-## Download weather XML file from NWS, change location code in setup.py
+## Download weather XML file from NWS, change location code in Setup.py
 def loadWeather():
     try:
         os.remove('weatherObservations.xml')

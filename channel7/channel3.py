@@ -53,7 +53,7 @@ def alertCount(isAlertValue):
 
 
 def clock():
-    current = time.strftime("%a %b %d %G %r")
+    current = time.strftime("%a %b %d %G          %r")
     timeText.configure(text=current.upper())
     root.after(1000, clock)  # run every 1sec
 
@@ -193,7 +193,7 @@ def weather_page():
 
 root = Tk()
 root.attributes('-fullscreen', fullScreen)
-root.geometry(screenSize)  # Change in setup.py
+root.geometry(screenSize)  # Change in Setup.py
 root.config(cursor="none", bg="green")
 root.wm_title("Channel 3")
 
@@ -215,9 +215,9 @@ weather_page()
 # scrolling text canvas
 def marqueeCreate():
     global marquee
-    marquee = Canvas(root, height=120, width=700, bg="green")
+    marquee = Canvas(root, height=120, width=760, bg="green")
     marquee.config(highlightbackground="green")
-    marquee.place(x=40, y=400)
+    marquee.place(x=20, y=420)
 
 
 # read in RSS data and prepare it

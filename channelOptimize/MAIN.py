@@ -3,30 +3,34 @@
 # Revisions by DamagedDolphin
 # Remaster by Faxanidu
 
-
+import os
+import urllib.request
 import gc
 import json
 import time
-from tkinter import *
+from tkinter import Canvas, Tk, Label
 
-from loadNews import *
-from weatherAlert import *
-from weatherObservations import *
+
+from Setup import *
+from Observations import loadWeather, getWeather
+from News import loadNews
+from Alert import weatherAlerts
 
 fontSet = "VCR OSD Mono"
-fontW = 11  # Font size for weather text
 
-loadWeather()
-weatherAlerts()
 
 #  Setup variables
 alertValue = 0
 dayValue = 0
 data = 0
 
-#  Prevents error of file NOT exsisting!
-open("weatherForecast.json", "a")
-open("weatherObservations.xml", "a")
+
+
+def startup():
+    f = open("weatherObservations.xml", "w+")
+    f.close()
+    f = open("weatherForecast.json", "w+")
+    f.close()
 
 #  US WEATHER FORECAST LOADER, CHANGE VALUES IN SETUP.PY
 
@@ -37,13 +41,13 @@ def forecast():
         data = json.load(json_file)
 
 
-def forecastCount(isDayValue):
-    isDayValue = isDayValue + 1
+def forecastCount(is_day_value):
+    is_day_value = is_day_value + 1
     try:
-        data['time']['startPeriodName'][isDayValue]
+        data['time']['startPeriodName'][is_day_value]
     except:
-        isDayValue = 0
-    return isDayValue
+        is_day_value = 0
+    return is_day_value
 
 
 ### US WEATHER ALERT LOADER, CHANGE VALUES IN SETUP.PY
@@ -62,7 +66,6 @@ def clock():
     timeText.configure(text=current.upper())
     root.after(1000, clock)  # run every 1sec
 
-
 ### CHANGE IN SETUP.PY
 if loadMusic == 1:
     os.system('nohup mpg321 --loop 0 --list playlist.lst &')
@@ -73,7 +76,7 @@ forecast()
 
 
 def weather_page():
-    global dayValue
+    global dayValue, weathercol, s1, s2, s3, s4, s5, s6, s7, s8
     global alertValue
     global weatherAlert
     checkTime = time.gmtime()[4]
@@ -94,7 +97,7 @@ def weather_page():
             tempLabel = data['time']['tempLabel'][dayValue]
             tempString = str(data['data']['temperature'][dayValue])
             textString = data['data']['text'][dayValue]
-            s = dayString + " " + tempLabel + " " + tempString + " " + textString + "\n"
+            s = f"{dayString} {tempLabel} {tempString} {textString} \n"
             s = s.upper()
             s1 = s[:47]
             s2 = s[47:94]
@@ -177,19 +180,19 @@ def weather_page():
             dayValue = forecastCount(dayValue)
     # create the canvas for middle page text
 
-    weather = Canvas(root, height=235, width=480, bg=weathercol)
-    weather.place(x=0, y=40)
+    weather = Canvas(root, height=270, width=800, bg=weathercol)
+    weather.place(x=0, y=100)
     weather.config(highlightbackground=weathercol)
 
     # place the 8 lines of text
-    weather.create_text(4, 10, anchor='nw', text=s1, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 40, anchor='nw', text=s2, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 70, anchor='nw', text=s3, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 100, anchor='nw', text=s4, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 130, anchor='nw', text=s5, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 160, anchor='nw', text=s6, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 190, anchor='nw', text=s7, font=(fontSet, fontW, "bold"), fill="white")
-    weather.create_text(4, 220, anchor='nw', text=s8, font=(fontSet, fontW, "bold"), fill="white")
+    weather.create_text(15, 15,  anchor='nw', text=s1, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 45,  anchor='nw', text=s2, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 75,  anchor='nw', text=s3, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 105, anchor='nw', text=s4, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 135, anchor='nw', text=s5, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 165, anchor='nw', text=s6, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 195, anchor='nw', text=s7, font=(fontSet, 20), fill="white")
+    weather.create_text(15, 225, anchor='nw', text=s8, font=(fontSet, 20), fill="white")
 
     root.after(30000, weather_page)  # re-run every 30sec from program launch
 
@@ -204,14 +207,15 @@ root.wm_title("Channel 3")
 
 # Clock - Top RIGHT
 
-timeText = Label(root, text="", font=(fontSet, 14), fg="white", bg="green")
-timeText.place(x=174, y=10)
+timeText = Label(root, text="", font=(fontSet, 20), fg="white", bg="green")
+timeText.place(x=335, y=40)
 clock()
 
 # Title - Top LEFT
 
-Title = Label(root, text=cableCo, font=(fontSet, 14), fg="white", bg="green")
-Title.place(x=4, y=10)
+Title = Label(root, text=cableCo, font=(fontSet, 20), fg="white", bg="green")
+Title.place(x=20, y=40)
+
 
 # Middle Section (Cycling weather pages, every 30sec)
 weather_page()
@@ -220,9 +224,9 @@ weather_page()
 # scrolling text canvas
 def marqueeCreate():
     global marquee
-    marquee = Canvas(root, height=40, width=480, bg="green")
+    marquee = Canvas(root, height=120, width=760, bg="green")
     marquee.config(highlightbackground="green")
-    marquee.place(x=4, y=285)
+    marquee.place(x=20, y=420)
 
 
 # read in RSS data and prepare it
@@ -235,39 +239,52 @@ for r in range(width):  # create an empty string of 35 characters
 ### RSS FEED LOADER
 ### CHANGE VALUES IN SETUP.PY
 
-try:
-    getNews
-except:
-    getNews = loadNews()
-    newsItem = ""
 
-while True:
-    for item in getNews:
-        try:
-            marquee
-        except:
-            marqueeCreate()
-        newsItem = item.upper() + pad
-
-        # use the length of the news feeds to determine the total pixels in the scrolling section
-        marquee_length = len(newsItem)
-        pixels = marquee_length * 24  # roughly 24px per char
-
-        # setup scrolling text
-
-        text = marquee.create_text(1, 2, anchor='nw', text=pad + newsItem + pad, font=(fontSet, 16,), fill="white")
-
-        for p in range(pixels + 481):
-            marquee.move(text, -1, 0)  # shift the canvas to the left by 1 pixel
-            marquee.update()
-            time.sleep(0.006)  # scroll every 6ms
-
-        del text
-        del marquee
-        gc.collect()
-
-    if item == len(getNews):
+def scrolling():
+    global marquee, getNews, item
+    try:
+        getNews
+    except:
         getNews = loadNews()
-        del newsItem
+        newsItem = ""
+    while True:
+        for item in getNews:
+            try:
+                marquee
+            except:
+                marqueeCreate()
 
-    root.mainloop()
+            newsItem = item.upper() + pad
+
+            # use the length of the news feeds to determine the total pixels in the scrolling section
+            marquee_length = len(newsItem)
+            pixels = marquee_length * 24  # roughly 24px per char
+
+            # setup scrolling text
+
+            text = marquee.create_text(1, 2, anchor='nw', text=pad + newsItem + pad, font=(fontSet, 25,), fill="white")
+
+            for p in range(pixels + 601):
+                marquee.move(text, -1, 0)  # shift the canvas to the left by 1 pixel
+                marquee.update()
+                time.sleep(0.005)  # scroll every 5ms
+
+            del text
+            del marquee
+            gc.collect()
+
+        root.mainloop()
+
+        if item == len(getNews):
+            getNews = loadNews()
+            del newsItem
+
+def main():
+    startup()
+    loadWeather()
+    weatherAlerts()
+    scrolling()
+
+
+if __name__ == '__main__':
+    main()
